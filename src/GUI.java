@@ -81,7 +81,7 @@ public class GUI {
         leftPanel.add(searchButton, new GridBagConstraints(0,6,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(2,2,2,2),0,0));
         leftPanel.add(resetButton, new GridBagConstraints(1,6,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(2,2,2,2),0,0));
         mainPanel.add(leftPanel, new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(2,2,2,2),0,0));
-        mainPanel.add(tourTable, new GridBagConstraints(0,1,1,1,GridBagConstraints.RELATIVE,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(2,2,2,2),0,0));
+        mainPanel.add(tourTable, new GridBagConstraints(0,1,1,1,0,0,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(2,2,2,2),0,0));
 
 
         mainFrame.add(mainPanel);
