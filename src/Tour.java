@@ -161,7 +161,7 @@ public class Tour {
     }
 
     // цена
-    public double PropPrice(){
+    public double getPropPrice(){
             if (SetOfStations != null) {
                 return SetOfStations[StationTo].Price;
             }
@@ -169,7 +169,7 @@ public class Tour {
     }
 
     //Дни недели, по которым ходит рейс
-    public String PropDays(){
+    public String getPropDays(){
             if (DaysOfTrips != null) {
                 String res = "";
                 for (int i = DaysOfTrips.size() - 1; i >= 0; i--) {
@@ -183,7 +183,10 @@ public class Tour {
     }
 
     //все места на рейсе
-    public int PropAllPlaces(){
+    public int getPropAllPlaces(){
         return Places;
+    }
+    public Station[] getPropStations(){
+        return SetOfStations;
     }
 }
