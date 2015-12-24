@@ -49,6 +49,7 @@ public class MyTableDataView extends JPanel{
     public JTable getTable(){
         return table;
     }
+
     private class ModelForTable extends AbstractTableModel implements Observer {
         private MyTableDataModel tab_model;
 
@@ -76,10 +77,6 @@ public class MyTableDataView extends JPanel{
                 case 9: return "Days";
             }
             return "AllPlaces";
-            /*if (col == 0) {
-                return "Nick";
-            }
-            return "IP";*/
         }
 
         public ModelForTable(MyTableDataModel m) {
@@ -108,6 +105,7 @@ public class MyTableDataView extends JPanel{
                 case 7: return tab_model.getFreePlacesAt(row);
                 case 8: return tab_model.getPriceAt(row);
                 case 9: return tab_model.getDays(row);
+                case 10:return tab_model.getAllPlacesAt(row);
             }
             assert (false);
             return null;

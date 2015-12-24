@@ -5,8 +5,8 @@ import java.util.Observable;
 public class MyTableDataModel extends Observable {
     private List<Tour> tours = new ArrayList<Tour>();
     private String [] tourNames = new String[0];
-    public void add(int id,String from,String to,String depT,String arrT,int places,Station[] stations,String driver,String company){
-        tours.add(new Tour(id,from,to,depT,arrT,places,stations,driver,company));
+    public void add(String id,String tourName,String from,String depT,String to,String arrT,String date,int freePlaces,Station[] stations,double price,String[] days,int allPlaces){
+        tours.add(new Tour(id,tourName,from,depT,to,arrT,date,freePlaces,stations,price,days,allPlaces));
         this.tourNames = this.getAllTourName();
         setChanged();
         notifyObservers();
@@ -15,6 +15,9 @@ public class MyTableDataModel extends Observable {
         tours.add(tour);
         setChanged();
         notifyObservers();
+    }
+    public Tour getAt(int index){
+        return tours.get(index);
     }
     public int getSize(){
         return tours.size();
@@ -56,16 +59,23 @@ public class MyTableDataModel extends Observable {
         }
         return names;
     }
+    public Station[] getStations(int index){
+        return tours.get(index).getPropStations();
+    }
     public String getDateAt(int index){
         return tours.get(index).getPropDate();
     }
     public String getDays(int index){
-        return tours.get(index).getPropDays();
+        String text="";
+        for (int i=0;i<tours.get(index).DaysOfTrips.length;i++){
+            text+=tours.get(index).DaysOfTrips[i]+" ";
+        }
+        return text;
     }
 
-    public boolean delete (String tourName,String arrT){
+    public boolean delete (String tourName,String date){
         for (int i=0;i<tours.size();i++){
-            if (tours.get(i).getPropTourName().equals(tourName) && tours.get(i).getPropArrivalTime().equals(arrT)){
+            if (tours.get(i).getPropTourName().equals(tourName) && tours.get(i).getPropDate().equals(date)){
                 tours.remove(i);
                 this.tourNames = this.getAllTourName();
                 this.setChanged();
@@ -74,5 +84,10 @@ public class MyTableDataModel extends Observable {
             }
         }
         return false;
+    }
+    public void clear() {
+        this.tours.clear();
+        this.setChanged();
+        this.notifyObservers();
     }
 }
