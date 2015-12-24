@@ -4,8 +4,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class Tour {
+    private int FreePlaces;
     //номер рейса
-    public int TourID;
+    public String TourID;
     //Начальный пункт рейса
     public String From;
     //Конечный пункт рейса
@@ -17,13 +18,9 @@ public class Tour {
     //Все места
     public int Places;
     //Дни недели, по которым ходит рейс
-    public List<String> DaysOfTrips;
+    public String[] DaysOfTrips;
     //Массив остановок
     public Station[] SetOfStations;
-
-    //Посадочная ведомость
-    public String Driver;       // водитель
-    public String Company;      // компания
 
     //Массив билетов на месяц
     public List<TicketsForDay> TicketsForMonth;
@@ -38,22 +35,13 @@ public class Tour {
     public int StationFrom;
     //номер станци прибытия из массива станций (для отображения при поиске и покупке билета)
     public int StationTo;
+    private double TourPrice;
+    private int AllPlaces;
 
     //конструктор по уумолчанию
-    public Tour() {
-    }
+    public Tour(){}
 
-    public Tour(
-            int id,
-            String from,
-            String to,
-            String depT,
-            String arrT,
-            int places,
-            Station[] stations,
-            String driver,
-            String company
-    ) {
+    public Tour(String id,String tourName,String from,String depT,String to,String arrT,String date,int freePlaces,Station[] stations,double price,String[] days,int allPlaces) {
         this.StationFrom = 0;
         this.StationTo = stations.length - 1;
         //
@@ -62,20 +50,20 @@ public class Tour {
         this.To = to;
         this.DepartureTime = depT;
         this.ArrivalTime = arrT;
-        this.Places = places;
-        this.TourName = From + "-" + To;
+        this.FreePlaces = freePlaces;
+        this.TourName = tourName;
         //
-        this.DaysOfTrips = new ArrayList<String>();
+        this.DaysOfTrips = days;
         //заполнение массива станций
         this.SetOfStations = new Station[stations.length];
         for (int i = 0; i < SetOfStations.length; i++) {
             this.SetOfStations[i] = new Station(stations[i]);
         }
         //
-        this.Driver = driver;
-        this.Company = company;
         this.TicketsForMonth = new ArrayList<TicketsForDay>();
-        this.TourDate = "default";
+        this.TourDate = date;
+        this.TourPrice = price;
+        this.AllPlaces = allPlaces;
     }
 
     //метод, который возращает коллекцию билетов по дате рейса
@@ -116,7 +104,7 @@ public class Tour {
 
     //номер рейса
     public String getPropTourID(){
-        return String.valueOf(TourID);
+        return TourID;
     }
 
     //название рейса
@@ -126,53 +114,65 @@ public class Tour {
 
     //откуда
     public String getPropFrom(){
-        return SetOfStations[StationFrom].StationName;
+        //return SetOfStations[StationFrom].StationName;
+        return From;
     }
 
     //время отправления
-    public String getPropDepartureTime(){
+    /*public String getPropDepartureTime(){
         return SetOfStations[StationFrom].DepTime;
+    }*/
+    public String getPropDepartureTime(){
+        return DepartureTime;
     }
 
     //куда
     public String getPropTo(){
-        return SetOfStations[StationTo].StationName;
+        //return SetOfStations[StationTo].StationName;
+        return To;
     }
 
     //время прибытия
     public String getPropArrivalTime(){
-        return SetOfStations[StationTo].ArrTime;
+        //return SetOfStations[StationTo].ArrTime;
+        return ArrivalTime;
     }
 
     //дата рейса
     public String getPropDate(){
-            if (DayTourNow() != null) {
+            /*if (DayTourNow() != null) {
                 return DayTourNow().getKey();
             }
-            return "No trip";
+            return "No trip";*/
+        return TourDate;
     }
 
     //количество свободных мест
     public int getPropFreePlaces(){
-            if (DayTourNow() != null) {
+            /*if (DayTourNow() != null) {
                 return Places - DayTourNow().getProtectedPlaces();
             }
-            return 0;
+            return 0;*/
+        return FreePlaces;
     }
 
     // цена
     public double getPropPrice(){
-            if (SetOfStations != null) {
+            /*if (SetOfStations != null) {
                 return SetOfStations[StationTo].Price;
             }
-            return 0.0;
-    }
+            return 0.0;*/
+        return TourPrice;
 
+    }
+    public String[] getPropDays(){
+        return DaysOfTrips;
+    }
     //Дни недели, по которым ходит рейс
-    public String getPropDays(){
+    /*public String getPropDays(){
             if (DaysOfTrips != null) {
                 String res = "";
-                for (int i = DaysOfTrips.size() - 1; i >= 0; i--) {
+                for (int i = DaysOfTrips.length - 1; i >= 0; i--) {
                     res += DaysOfTrips.get(i).substring(0, 3) + ", ";
                 }
                 if (res.length() != 0) {
@@ -180,13 +180,19 @@ public class Tour {
                 }
             }
             return null;
-    }
+    }*/
 
     //все места на рейсе
+    public void setFreePlaces(int newFreePlaces){
+        this.FreePlaces = newFreePlaces;
+    }
     public int getPropAllPlaces(){
-        return Places;
+        return AllPlaces;
     }
     public Station[] getPropStations(){
         return SetOfStations;
+    }
+    public String toString(){
+        return TourID+" "+TourName+" "+From+" "+DepartureTime+" "+To+" "+ArrivalTime+" "+TourDate+" "+FreePlaces+" "+TourPrice+" "+AllPlaces;
     }
 }

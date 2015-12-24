@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -76,6 +77,8 @@ public class MyTableDataModel extends Observable {
     public boolean delete (String tourName,String date){
         for (int i=0;i<tours.size();i++){
             if (tours.get(i).getPropTourName().equals(tourName) && tours.get(i).getPropDate().equals(date)){
+                //File file = new File(DataAccess.LOG_FOLDER+"\\tour_"+tours.get(i).getPropTourID()+".txt");
+                //file.delete();
                 tours.remove(i);
                 this.tourNames = this.getAllTourName();
                 this.setChanged();

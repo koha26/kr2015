@@ -1,6 +1,6 @@
 public class Ticket {
     //номер билета
-    private int TicketID;
+    private static int TicketID=0;
     //номер места
     private int PlaceNumber;
     //ФИО покупателя
@@ -15,13 +15,14 @@ public class Ticket {
     private String DepTime;
     //Время прибытия в конечный пункт
     private String ArrTime;
+    private String Date;
     //конструктор по умолчанию
     private Ticket() {
     }
 
     //конструктор с параметрами
-    public Ticket(int id, int placeN, String FIO, String from, String to, String depT, String arrT, double price){
-        this.TicketID = id;
+    public Ticket(int placeN, String FIO, String from, String to, String depT, String arrT, String date, double price){
+        TicketID++;
         this.PlaceNumber = placeN;
         this.Customer = FIO;
         this.StationFrom = from;
@@ -29,25 +30,27 @@ public class Ticket {
         this.DepTime = depT;
         this.ArrTime = arrT;
         this.Price = price;
+        this.Date = date;
     }
     // конструктор из другого билета
     public Ticket(Ticket other){
-        this.TicketID = other.getTicketID();
+        TicketID++;
         this.PlaceNumber = other.getPlaceNumber();
-        this.Customer = other.getCustomer();
         this.StationFrom = other.getStationFrom();
+        this.Customer= other.getCustomer();
         this.StationTo = other.getStationTo();
         this.DepTime = other.getDepTime();
         this.ArrTime = other.getArrTime();
         this.Price = other.getPrice();
+        this.Date = other.getDate();
     }
 
-    public int getTicketID() {
+    public static int getTicketID() {
         return TicketID;
     }
 
-    public void setTicketID(int ticketID) {
-        this.TicketID = ticketID;
+    public static void setTicketID(int ticketID) {
+        TicketID = ticketID;
     }
 
     public int getPlaceNumber() {
@@ -104,5 +107,13 @@ public class Ticket {
 
     public void setArrTime(String arrTime) {
         this.ArrTime = arrTime;
+    }
+
+    public String getDate() {
+        return Date;
+    }
+
+    public void setDate(String date) {
+        Date = date;
     }
 }

@@ -4,8 +4,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class DataAccess {
-    private static final String LOG_FOLDER="log";
+    public static final String LOG_FOLDER="log";
+    private static final String TICKET_FOLDER="tickets";
     private File[] files;
+    private int numberTickets;
     private Map<String,String> tourNameDate=new HashMap<String, String>();
     public DataAccess(){
         File myFolder = new File(DataAccess.LOG_FOLDER);
@@ -16,7 +18,10 @@ public class DataAccess {
             this.tourNameDate.put(name,"None");
         }
     }
-
+    public void deleteById(String id){
+        File file = new File(DataAccess.LOG_FOLDER+"\\tour_"+id+".txt");
+        file.delete();
+    }
     public String[] getAllNames(){
         String[]names = new String[tourNameDate.size()];
         names=tourNameDate.keySet().toArray(names);
@@ -128,12 +133,37 @@ public class DataAccess {
         return tourNameDate;
     }
 
+    public void printTicket(Ticket ticket) throws FileNotFoundException {
+        File file = new File(getNameOfTicket(ticket));
+        PrintWriter pw = new PrintWriter(file);
+        pw.write(Integer.toString(Ticket.getTicketID()));
+        pw.println();
+        pw.write(ticket.getCustomer());
+        pw.println();
+        pw.write(ticket.getStationFrom() + " " + ticket.getDepTime());
+        pw.println();
+        pw.write(ticket.getStationTo() + " " + ticket.getArrTime());
+        pw.println();
+        pw.write(ticket.getDate());
+        pw.println();
+        pw.write(Integer.toString(ticket.getPlaceNumber()));
+        pw.println();
+        pw.write(Double.toString(ticket.getPrice()));
+        pw.println();
+        pw.close();
+    }
+    
+
+    public String getNameOfTicket(Ticket ticket){
+       return TICKET_FOLDER+"\\ticket_"+Integer.toString(ticket.getTicketID())+".txt";
+    }
+
     public static void main (String [] args) throws IOException {
         DataAccess ds = new DataAccess();
         System.out.print(ds.getTourNameDate().keySet());
         //System.out.print(ds.getTourNameDate().get("tour_0001.txt"));
         //System.out.print(ds.getAllNames());
-        System.out.println(ds.getTourById("0001").toString());
+//        System.out.println(ds.getTourById("0001").toString());
         Station station[] = new Station[2];
         station[0]=new Station("Основа",30.2);
         station[1]=new Station("Кременчуг",60.75);
