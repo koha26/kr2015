@@ -6,8 +6,8 @@ import java.util.Observable;
 public class MyTableDataModel extends Observable {
     private List<Tour> tours = new ArrayList<Tour>();
     private String [] tourNames = new String[0];
-    public void add(String id,String tourName,String from,String depT,String to,String arrT,String date,int freePlaces,Station[] stations,double price,String[] days,int allPlaces){
-        tours.add(new Tour(id,tourName,from,depT,to,arrT,date,freePlaces,stations,price,days,allPlaces));
+    public void add(String id,String tourName,String from,String depT,String to,String arrT,String date,int freePlaces,Station[] stations,double price,String[] days,int allPlaces,ArrayList<Ticket> tickets){
+        tours.add(new Tour(id,tourName,from,depT,to,arrT,date,freePlaces,stations,price,days,allPlaces,tickets));
         this.tourNames = this.getAllTourName();
         setChanged();
         notifyObservers();

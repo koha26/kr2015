@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,12 +36,14 @@ public class GUI {
     private MyTableDataView tableView;
     private Tour[] tours;
     private String[] IDs;
-    private AddWindow addWindow;
+    private AddEditWindow addWindow;
     private JScrollPane scrollPane;
     private JMenu ticketMenu;
     private JMenuItem buyTicketMenu;
     private TicketWindow ticketWindow;
     private JButton deleteButton;
+    private JButton editTourButton;
+    private JButton returnTicketButton;
 
     public GUI() {
         initialize();
@@ -52,7 +55,6 @@ public class GUI {
         String[] names = dataAccess.getAllNames();
         for (int i = 0; i < names.length; i++) {
             String id = names[i].substring(5);
-//            IDs[i]=id;
             tableModel.add(dataAccess.getTourById(id));
         }
     }
@@ -67,7 +69,7 @@ public class GUI {
         int screenWidth = screenSize.width;
         int screenHeigth = screenSize.height;
 
-        mainFrame.setSize(1000,200);
+        mainFrame.setSize(1000, 250);
         mainFrame.setResizable(false);
         //mainFrame.setPreferredSize(new Dimension(1000,200));
         //mainFrame.setBounds(screenWidth / 4, screenHeigth / 4, screenWidth / 2, screenHeigth / 2);
@@ -99,6 +101,8 @@ public class GUI {
         resetButton = new JButton("Refresh");
         addButton = new JButton("Add tour");
         deleteButton = new JButton("Delete tour");
+        editTourButton = new JButton("Edit...");
+        returnTicketButton = new JButton("Return ticket");
 
         tourTable = new JTable();
 
@@ -113,28 +117,12 @@ public class GUI {
         menuBar.add(fileMenu);
         mainFrame.setJMenuBar(menuBar);
 
-
-        saveMenu.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fc = new JFileChooser();
-                if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        FileWriter fw = new FileWriter(fc.getSelectedFile());
-                        fw.write("Blah blah blah...");
-                    } catch (IOException e2) {
-                        System.out.println("Всё погибло!");
-                    }
-                }
-            }
-        });
         tablePanel.setLayout(layout1);
         tableModel = new MyTableDataModel();
         tableView = new MyTableDataView(tableModel);
 
         scrollPane = new JScrollPane(tableView.getTable());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        //JTextArea textArea = new JTextArea("Здесь вместо текст ареа - таблица");
         tablePanel.add(scrollPane, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
 
         //gridx,gridy,gridwidth,gridheight,weidthx,weidthy,anchor,fill,insets,ipadx,ipady
@@ -148,13 +136,13 @@ public class GUI {
         leftPanel.add(resetButton, new GridBagConstraints(1, 3, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
         leftPanel.add(addButton, new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
         leftPanel.add(deleteButton, new GridBagConstraints(1, 4, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
-
+        leftPanel.add(editTourButton, new GridBagConstraints(0, 5, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
+        leftPanel.add(returnTicketButton, new GridBagConstraints(1, 5, 1, 1, 1, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
 
         mainPanel.add(leftPanel, new GridBagConstraints(0, 0, 1, 1, 0.2, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
         mainPanel.add(tablePanel, new GridBagConstraints(1, 0, 1, 1, 0.8, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));
 
         mainFrame.add(mainPanel);
-        //mainFrame.pack();
 
         deleteButton.addActionListener(new AbstractAction() {
             @Override
@@ -162,12 +150,11 @@ public class GUI {
                 int pos = tableView.getSelectedRow();
                 if (pos >= 0) {
                     dataAccess.deleteById(tableView.getModel().getIdAt(pos));
-                    String id=tableView.getModel().getIdAt(pos);
+                    String id = tableView.getModel().getIdAt(pos);
                     tableView.getModel().clear();
                     initializeTableData();
-                    JOptionPane.showMessageDialog(mainFrame, "Тур №"+id+" успешно удален!");
-                }
-                else{
+                    JOptionPane.showMessageDialog(mainFrame, "Тур №" + id + " успешно удален!");
+                } else {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -212,7 +199,34 @@ public class GUI {
         addButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addWindow = new AddWindow();
+                addWindow = new AddEditWindow();
+            }
+        });
+
+        editTourButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int pos = tableView.getSelectedRow();
+                if (pos >= 0) {
+                    addWindow = new AddEditWindow(tableView.getModel().getAt(pos));
+                }
+                else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            JOptionPane.showMessageDialog(mainFrame, "Нужно выделить тур в таблице!");
+                        }
+                    });
+                }
+                tableView.getModel().clear();
+                initializeTableData();
+            }
+        });
+
+        returnTicketButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ReturnTicketWindow returnTicketWindow = new ReturnTicketWindow();
             }
         });
     }
@@ -274,7 +288,118 @@ public class GUI {
         }
     }
 
-    class AddWindow {
+    class ReturnTicketWindow{
+        private JLabel fioLabel;
+        private JTextField fioText;
+        private JPanel returnPanel;
+        private JLabel tourNameLabel;
+        private JTextField tourNameText;
+        private JButton returnButton;
+        private JButton cancelButton;
+
+        public ReturnTicketWindow(){
+            initialize();
+        }
+        public void initialize(){
+            final JFrame returnForm = new JFrame("Return Ticket");
+            returnForm.setSize(500,200);
+            returnForm.setVisible(true);
+
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            Dimension screenSize = kit.getScreenSize();
+            int screenWidth = screenSize.width;
+            int screenHeigth = screenSize.height;
+
+            fioLabel = new JLabel("Enter your F.I.O.");
+            fioText = new JTextField();
+
+            tourNameLabel = new JLabel("Tour name: ");
+            tourNameText = new JTextField();
+
+            returnButton = new JButton("Return");
+            cancelButton = new JButton("Calcel");
+
+            returnPanel = new JPanel();
+            GridBagLayout layout = new GridBagLayout();
+            returnPanel.setLayout(layout);
+
+            //gridx,gridy,gridwidth,gridheight,weidthx,weidthy,anchor,fill,insets,ipadx,ipady
+            returnPanel.add(fioLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.EAST, new Insets(2, 2, 2, 2), 0, 0));
+            returnPanel.add(fioText, new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            returnPanel.add(tourNameLabel, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.EAST, new Insets(2, 2, 2, 2), 0, 0));
+            returnPanel.add(tourNameText, new GridBagConstraints(1, 1, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+
+            returnPanel.add(returnButton, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.EAST, new Insets(2, 2, 2, 2), 0, 0));
+            returnPanel.add(cancelButton, new GridBagConstraints(1, 2, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.EAST, new Insets(2, 2, 2, 2), 0, 0));
+
+            returnForm.add(returnPanel);
+
+            cancelButton.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    returnForm.dispose();
+                }
+            });
+
+            returnButton.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                   if (!fioText.getText().equals("") && !tourNameText.getText().equals("")){
+                       for (int i=0;i<tableView.getModel().getAllTourName().length;i++){
+                           if (tableView.getModel().getAllTourName()[i].equals(tourNameText.getText())){
+                               for (int j=0;j<tableView.getModel().getAt(i).getSetOfTickets().size();j++){
+                                   if (tableView.getModel().getAt(i).getSetOfTickets().get(j).getCustomer().equals(fioText.getText())){
+                                       try {
+                                           new File(dataAccess.getNameOfTicket(tableView.getModel().getAt(i),tableView.getModel().getAt(i).getSetOfTickets().get(j))).delete();
+                                           tableView.getModel().getAt(i).getSetOfTickets().remove(j);
+                                           dataAccess.rewriteTour(tableView.getModel().getAt(i));
+                                           SwingUtilities.invokeLater(new Runnable() {
+                                               @Override
+                                               public void run() {
+                                                   JOptionPane.showMessageDialog(returnForm, "Возврат произведен!");
+                                               }
+                                           });
+                                           returnForm.dispose();
+                                           return;
+                                       } catch (FileNotFoundException e1) {
+                                           e1.printStackTrace();
+                                       }
+                                       return;
+                                   }
+                               }
+                               SwingUtilities.invokeLater(new Runnable() {
+                                   @Override
+                                   public void run() {
+                                       JOptionPane.showMessageDialog(returnForm, "Билета на имя этого человека не куплено!");
+
+                                   }
+                               });
+                               return;
+                           }
+                       }
+                       SwingUtilities.invokeLater(new Runnable() {
+                           @Override
+                           public void run() {
+                               JOptionPane.showMessageDialog(returnForm, "Такого тура не было найдено!");
+                           }
+                       });
+                       return;
+                   }
+                    else {
+                       SwingUtilities.invokeLater(new Runnable() {
+                           @Override
+                           public void run() {
+                               JOptionPane.showMessageDialog(returnForm, "Вы не заполнили все поля!");
+                           }
+                       });
+                   }
+                }
+            });
+        }
+
+    }
+
+    class AddEditWindow {
         private JLabel idLabel;
         private JLabel tourNameLabel;
         private JLabel fromLabel;
@@ -308,9 +433,41 @@ public class GUI {
         private JTextField stationsPane;
         private JPanel addPanel;
         private JScrollPane stationPane;
+        private boolean editable=false;
 
-        public AddWindow() {
+        public AddEditWindow() {
             initialize();
+        }
+
+        public AddEditWindow(Tour tour) {
+            initialize();
+            editable=true;
+            idText.setText(tour.getPropTourID());
+            tourNameText.setText(tour.getPropTourName());
+            fromText.setText(tour.getPropFrom());
+            toText.setText(tour.getPropTo());
+            detTText.setText(tour.getPropDepartureTime());
+            arrTText.setText(tour.getPropArrivalTime());
+            dateText.setText(tour.getPropDate());
+            freePlacesText.setText(Integer.toString(tour.getPropFreePlaces()));
+            String st = "";
+            if (tour.getPropStations().length != 0) {
+                for (int i = 0; i < tour.getPropStations().length; i++) {
+                    st += (tour.getPropStations()[i].getPropStationName() + " ");
+                    st += (Double.toString(tour.getPropStations()[i].getPropPrice()));
+                    if (i != tour.getPropStations().length - 1) st += " ";
+                }
+            }
+            stationText.setText(st);
+            mainPriceText.setText(Double.toString(tour.getPropPrice()));
+            String d = "";
+            for (int i = 0; i < tour.getPropDays().length; i++) {
+                d += (tour.getPropDays()[i] + " ");
+                if (i != tour.getPropDays().length - 1) d += " ";
+            }
+            daysText.setText(d);
+            allPlacesText.setText(String.valueOf(tour.getPropAllPlaces()));
+            freePlacesText.setText(String.valueOf(tour.getPropFreePlaces()));
         }
 
         public void initialize() {
@@ -340,6 +497,9 @@ public class GUI {
             mainPrice = new JLabel("MainPrice: ");
 
             idText = new JTextField();
+            idText.setEditable(false);
+            idText.setText(dataAccess.getId());
+
             tourNameText = new JTextField();
             fromText = new JTextField();
             toText = new JTextField();
@@ -464,33 +624,31 @@ public class GUI {
                             ind++;
                         }
                         String[] days = daysText.getText().split(" ");
-                        if (dataAccess.isAvaivable(idText.getText())) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    JOptionPane.showMessageDialog(addForm, "Введите, пожалуйста, другой ID, т.к. такой уже существует.");
-                                }
-                            });
-                        } else {
-                            tableView.getModel().add(new Tour(idText.getText(), tourNameText.getText(), fromText.getText(),
-                                    detTText.getText(), toText.getText(), arrTText.getText(), dateText.getText(),
-                                    Integer.parseInt(freePlacesText.getText()), stations, Double.parseDouble(mainPriceText.getText()),
-                                    days, Integer.parseInt(allPlacesText.getText())));
-                            try {
-                                dataAccess.addTour(tableView.getModel().getAt(tableView.getModel().getSize() - 1));
-                            } catch (FileNotFoundException e1) {
-                                e1.printStackTrace();
-                            }
-                            //mainFrame.setEnabled(true);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    JOptionPane.showMessageDialog(addForm, "Тур добавлен!");
-                                }
-                            });
-                            addForm.dispose();
-                            mainFrame.setEnabled(true);
+
+                        tableView.getModel().add(new Tour(idText.getText(), tourNameText.getText(), fromText.getText(),
+                                detTText.getText(), toText.getText(), arrTText.getText(), dateText.getText(),
+                                Integer.parseInt(freePlacesText.getText()), stations, Double.parseDouble(mainPriceText.getText()),
+                                days, Integer.parseInt(allPlacesText.getText()),null));
+                        try {
+                            dataAccess.addTour(tableView.getModel().getAt(tableView.getModel().getSize() - 1));
+                        } catch (FileNotFoundException e1) {
+                            e1.printStackTrace();
                         }
+                        //mainFrame.setEnabled(true);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!editable)
+                                    JOptionPane.showMessageDialog(addForm, "Тур добавлен!");
+                                else {
+                                    JOptionPane.showMessageDialog(addForm, "Тур отредактирован!");
+                                    editable=false;
+                                }
+                            }
+                        });
+                        addForm.dispose();
+                        mainFrame.setEnabled(true);
+
                     } else {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
@@ -600,23 +758,23 @@ public class GUI {
             customerText = new JTextField();
 
             idText = new JTextField();
-            idText.setEnabled(false);
+            idText.setEditable(false);
             tourNameText = new JTextField();
-            tourNameText.setEnabled(false);
+            tourNameText.setEditable(false);
             fromText = new JTextField();
             toText = new JTextField();
             detTText = new JTextField();
-            detTText.setEnabled(false);
+            detTText.setEditable(false);
             arrTText = new JTextField();
-            arrTText.setEnabled(false);
+            arrTText.setEditable(false);
             dateText = new JTextField();
-            dateText.setEnabled(false);
+            dateText.setEditable(false);
             freePlacesText = new JTextField();
-            freePlacesText.setEnabled(false);
+            freePlacesText.setEditable(false);
             allPlacesText = new JTextField();
-            allPlacesText.setEnabled(false);
+            allPlacesText.setEditable(false);
             mainPriceText = new JTextField();
-            mainPriceText.setEnabled(false);
+            mainPriceText.setEditable(false);
             placeText = new JTextField();
 
             stationPane = new JScrollPane(stationText);
@@ -682,17 +840,19 @@ public class GUI {
                             return;
                         }
                         if (tTour.getPropTo().equals(toText.getText()) && tTour.getPropFrom().equals(fromText.getText())) {
-                            ticket = new Ticket(Integer.parseInt(placeText.getText()), customerText.getText(), fromText.getText(), toText.getText(), detTText.getText(),
+                            ticket = new Ticket(String.valueOf(tTour.getPropAllPlaces()-tTour.getPropFreePlaces()),Integer.parseInt(placeText.getText()), customerText.getText(), fromText.getText(), toText.getText(), detTText.getText(),
                                     arrTText.getText(), dateText.getText(), Double.parseDouble(mainPriceText.getText()));
+                            tTour.addTicketToSet(ticket);
 
                             try {
-                                dataAccess.printTicket(ticket);
+                                dataAccess.rewriteTour(tTour);
+                                dataAccess.printTicket(tTour,ticket);
                                 flag = true;
                             } catch (FileNotFoundException e1) {
                                 e1.printStackTrace();
                             }
                             Tour newTour = dataAccess.getTourById(tTour.getPropTourID());
-                            newTour.setFreePlaces(tTour.getPropFreePlaces()-1);
+                            newTour.setFreePlaces(tTour.getPropFreePlaces() - 1);
                             try {
                                 dataAccess.rewriteTour(newTour);
                             } catch (FileNotFoundException e1) {
@@ -707,17 +867,19 @@ public class GUI {
                             if (tTour.getPropTo().equals(toText.getText()) && !tTour.getPropFrom().equals(fromText.getText())) {
                                 for (int j = 0; j < tTour.getPropStations().length; j++) {
                                     if (tTour.getPropStations()[j].getPropStationName().equals(fromText.getText())) {
-                                        ticket = new Ticket(Integer.parseInt(placeText.getText()), customerText.getText(), fromText.getText(), toText.getText(), detTText.getText(),
+                                        ticket = new Ticket(String.valueOf(tTour.getPropAllPlaces()-tTour.getPropFreePlaces()),Integer.parseInt(placeText.getText()), customerText.getText(), fromText.getText(), toText.getText(), detTText.getText(),
                                                 arrTText.getText(), dateText.getText(),
                                                 Double.parseDouble(mainPriceText.getText()) - tTour.getPropStations()[j].getPropPrice());
+                                        tTour.addTicketToSet(ticket);
                                         try {
-                                            dataAccess.printTicket(ticket);
+                                            dataAccess.rewriteTour(tTour);
+                                            dataAccess.printTicket(tTour,ticket);
                                             flag = true;
                                         } catch (FileNotFoundException e1) {
                                             e1.printStackTrace();
                                         }
                                         Tour newTour = dataAccess.getTourById(tTour.getPropTourID());
-                                        newTour.setFreePlaces(tTour.getPropFreePlaces()-1);
+                                        newTour.setFreePlaces(tTour.getPropFreePlaces() - 1);
                                         try {
                                             dataAccess.rewriteTour(newTour);
                                         } catch (FileNotFoundException e1) {
@@ -735,16 +897,18 @@ public class GUI {
                                 if (!tTour.getPropTo().equals(toText.getText()) && tTour.getPropFrom().equals(fromText.getText())) {
                                     for (int j = 0; j < tTour.getPropStations().length; j++) {
                                         if (tTour.getPropStations()[j].getPropStationName().equals(toText.getText())) {
-                                            ticket = new Ticket(Integer.parseInt(placeText.getText()), customerText.getText(), fromText.getText(), toText.getText(), detTText.getText(),
+                                            ticket = new Ticket(String.valueOf(tTour.getPropAllPlaces()-tTour.getPropFreePlaces()),Integer.parseInt(placeText.getText()), customerText.getText(), fromText.getText(), toText.getText(), detTText.getText(),
                                                     arrTText.getText(), dateText.getText(), tTour.getPropStations()[j].getPropPrice());
+                                            tTour.addTicketToSet(ticket);
                                             try {
-                                                dataAccess.printTicket(ticket);
+                                                dataAccess.rewriteTour(tTour);
+                                                dataAccess.printTicket(tTour,ticket);
                                                 flag = true;
                                             } catch (FileNotFoundException e1) {
                                                 e1.printStackTrace();
                                             }
                                             Tour newTour = dataAccess.getTourById(tTour.getPropTourID());
-                                            newTour.setFreePlaces(tTour.getPropFreePlaces()-1);
+                                            newTour.setFreePlaces(tTour.getPropFreePlaces() - 1);
                                             try {
                                                 dataAccess.rewriteTour(newTour);
                                             } catch (FileNotFoundException e1) {
@@ -773,17 +937,19 @@ public class GUI {
                                             }
                                         }
                                         if (f && t && (indF < indT)) {
-                                            ticket = new Ticket(Integer.parseInt(placeText.getText()), customerText.getText(), tTour.getPropStations()[indF].getPropStationName(),
+                                            ticket = new Ticket(String.valueOf(tTour.getPropAllPlaces()-tTour.getPropFreePlaces()),Integer.parseInt(placeText.getText()), customerText.getText(), tTour.getPropStations()[indF].getPropStationName(),
                                                     tTour.getPropStations()[indT].getPropStationName(), detTText.getText(),
                                                     arrTText.getText(), dateText.getText(),
                                                     tTour.getPropStations()[indT].getPropPrice() - tTour.getPropStations()[indF].getPropPrice());
+                                            tTour.addTicketToSet(ticket);
                                             try {
-                                                dataAccess.printTicket(ticket);
+                                                dataAccess.rewriteTour(tTour);
+                                                dataAccess.printTicket(tTour,ticket);
                                             } catch (FileNotFoundException e1) {
                                                 e1.printStackTrace();
                                             }
                                             Tour newTour = dataAccess.getTourById(tTour.getPropTourID());
-                                            newTour.setFreePlaces(tTour.getPropFreePlaces()-1);
+                                            newTour.setFreePlaces(tTour.getPropFreePlaces() - 1);
                                             try {
                                                 dataAccess.rewriteTour(newTour);
                                             } catch (FileNotFoundException e1) {
@@ -800,9 +966,7 @@ public class GUI {
                         }
                         showDialog();
                         ticketForm.dispose();
-
-                    }
-                    else {
+                    } else {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {

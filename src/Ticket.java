@@ -1,28 +1,19 @@
 public class Ticket {
-    //номер билета
-    private static int TicketID=0;
-    //номер места
+    private String TicketID;
     private int PlaceNumber;
-    //ФИО покупателя
     private String Customer;
-    //Станция отправления
     private String StationFrom;
-    //Станция прибытия
     private String StationTo;
-    //Цена
     private double Price;
-    //время отправления из начального пункта
     private String DepTime;
-    //Время прибытия в конечный пункт
     private String ArrTime;
     private String Date;
-    //конструктор по умолчанию
     private Ticket() {
     }
 
-    //конструктор с параметрами
-    public Ticket(int placeN, String FIO, String from, String to, String depT, String arrT, String date, double price){
-        TicketID++;
+
+    public Ticket(String ticketId, int placeN, String FIO, String from, String to, String depT, String arrT, String date, double price){
+        this.TicketID = ticketId;
         this.PlaceNumber = placeN;
         this.Customer = FIO;
         this.StationFrom = from;
@@ -32,9 +23,16 @@ public class Ticket {
         this.Price = price;
         this.Date = date;
     }
-    // конструктор из другого билета
+    public Ticket(String ticketId, int placeN, String FIO, String from, String to, double price){
+        this.TicketID = ticketId;
+        this.PlaceNumber = placeN;
+        this.Customer = FIO;
+        this.StationFrom = from;
+        this.StationTo = to;
+        this.Price = price;
+    }
     public Ticket(Ticket other){
-        TicketID++;
+        this.TicketID = other.getTicketID();
         this.PlaceNumber = other.getPlaceNumber();
         this.StationFrom = other.getStationFrom();
         this.Customer= other.getCustomer();
@@ -45,11 +43,11 @@ public class Ticket {
         this.Date = other.getDate();
     }
 
-    public static int getTicketID() {
+    public String getTicketID() {
         return TicketID;
     }
 
-    public static void setTicketID(int ticketID) {
+    public void setTicketID(String ticketID) {
         TicketID = ticketID;
     }
 
@@ -116,4 +114,5 @@ public class Ticket {
     public void setDate(String date) {
         Date = date;
     }
+
 }
