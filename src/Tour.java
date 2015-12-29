@@ -16,7 +16,6 @@ public class Tour {
 
     public String ArrivalTime;
 
-    public int Places;
 
     public String[] DaysOfTrips;
 
@@ -24,17 +23,10 @@ public class Tour {
 
     public List<Ticket> SetOfTickets;
 
-    public List<TicketsForDay> TicketsForMonth;
-
-
-    public boolean isTicket = false;
     public String TourDate = "default";
 
     public String TourName;
 
-    public int StationFrom;
-
-    public int StationTo;
     private double TourPrice;
     private int AllPlaces;
 
@@ -43,8 +35,6 @@ public class Tour {
     }
 
     public Tour(String id, String tourName, String from, String depT, String to, String arrT, String date, int freePlaces, Station[] stations, double price, String[] days, int allPlaces,List<Ticket> tickets) {
-        this.StationFrom = 0;
-        this.StationTo = stations.length - 1;
         //
         this.TourID = id;
         this.From = from;
@@ -60,45 +50,10 @@ public class Tour {
             this.SetOfStations[i] = new Station(stations[i]);
         }
         //
-        this.TicketsForMonth = new ArrayList<TicketsForDay>();
         this.TourDate = date;
         this.TourPrice = price;
         this.AllPlaces = allPlaces;
         this.SetOfTickets = tickets;
-    }
-
-
-    public TicketsForDay DayTourNow() {
-        Calendar calendar = Calendar.getInstance();
-        if (TourDate == "default" && TicketsForMonth != null) {
-            for (int i = 0; i < TicketsForMonth.size(); i++) {
-                if (Integer.parseInt(TicketsForMonth.get(i).getKey().split(".")[0]) >= calendar.get(Calendar.DAY_OF_MONTH) && Integer.parseInt(TicketsForMonth.get(i).getKey().split(".")[1]) == (calendar.get(Calendar.MONTH) + 1)) {
-                    return TicketsForMonth.get(i);
-                } else if (Integer.parseInt(TicketsForMonth.get(i).getKey().split(".")[1]) > (calendar.get(Calendar.MONTH) + 1)) {
-                    return TicketsForMonth.get(i);
-                } else if (Integer.parseInt(TicketsForMonth.get(i).getKey().split(".")[2]) > calendar.get(Calendar.YEAR)) {
-                    return TicketsForMonth.get(i);
-                }
-            }
-
-
-        } else if (TourDate != "default") {
-            String[] date = TourDate.split(".");
-            int date1 = Integer.parseInt(date[0]) + Integer.parseInt(date[1]) * 100 + Integer.parseInt(date[2]) * 1000;
-            String[] datenow = new String[3];
-            date[0] = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-            date[1] = String.valueOf((calendar.get(Calendar.MONTH) + 1));
-            date[2] = String.valueOf(calendar.get(Calendar.YEAR));   //DateTime.Now.Date.ToShortDateString().Split('.');
-            int date2 = Integer.parseInt(datenow[0]) + Integer.parseInt(datenow[1]) * 100 + Integer.parseInt(datenow[2]) * 1000;
-            if (date1 >= date2) {
-                for (int i = 0; i < TicketsForMonth.size(); i++) {
-                    if (TicketsForMonth.get(i).getKey() == TourDate) {
-                        return TicketsForMonth.get(i);
-                    }
-                }
-            }
-        }
-        return null;
     }
 
 

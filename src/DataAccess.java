@@ -5,7 +5,6 @@ public class DataAccess {
     public static final String LOG_FOLDER = "log";
     private static final String TICKET_FOLDER = "tickets";
     private File[] files;
-    private int numberTickets;
     private static String id = "0000";
     private Map<String, String> tourNameDate = new HashMap<String, String>();
 
@@ -129,6 +128,7 @@ public class DataAccess {
         pw.println();
         if (tour.getSetOfTickets() != null) {
             for (int i = 0; i < tour.SetOfTickets.size(); i++) {
+                tour.getSetOfTickets().get(i).setCustomer(tour.getSetOfTickets().get(i).getCustomer().replace(' ','_'));
                 pw.write(tour.SetOfTickets.get(i).getTicketID() + " " + tour.SetOfTickets.get(i).getCustomer() + " " + tour.SetOfTickets.get(i).getPlaceNumber() + " "
                         + tour.SetOfTickets.get(i).getStationFrom() + " " + tour.SetOfTickets.get(i).getStationTo() + " " + tour.SetOfTickets.get(i).getPrice());
                 pw.println();
@@ -160,19 +160,20 @@ public class DataAccess {
     public void printTicket(Tour tour, Ticket ticket) throws FileNotFoundException {
         File file = new File(getNameOfTicket(tour, ticket));
         PrintWriter pw = new PrintWriter(file);
-        pw.write(ticket.getTicketID());
+        pw.write("ID ðåéñà: "+ticket.getTicketID());
         pw.println();
-        pw.write(ticket.getCustomer());
+        ticket.setCustomer(ticket.getCustomer().replace(' ','_'));
+        pw.write("Ô.È.Î. êëèåíòà: "+ticket.getCustomer());
         pw.println();
-        pw.write(ticket.getStationFrom() + " " + ticket.getDepTime());
+        pw.write("Ìåñòî îòúåçäà: "+ticket.getStationFrom() + "   Âðåìÿ îòúåçäà: " + ticket.getDepTime());
         pw.println();
-        pw.write(ticket.getStationTo() + " " + ticket.getArrTime());
+        pw.write("Ìåñòî ïðèáûòèÿ: "+ticket.getStationTo() + "   Âðåìÿ ïðèáûòèÿ: " + ticket.getArrTime());
         pw.println();
-        pw.write(ticket.getDate());
+        pw.write("Äàòà: "+ticket.getDate());
         pw.println();
-        pw.write(Integer.toString(ticket.getPlaceNumber()));
+        pw.write("Ìåñòî: "+Integer.toString(ticket.getPlaceNumber()));
         pw.println();
-        pw.write(Double.toString(ticket.getPrice()));
+        pw.write("Öåíà:"+Double.toString(ticket.getPrice()));
         pw.println();
         pw.close();
     }
@@ -207,51 +208,51 @@ public class DataAccess {
         //System.out.print(ds.getTourNameDate().get("tour_0001.txt"));
         //System.out.print(ds.getAllNames());
 //        System.out.println(ds.getTourById("0001").toString());
-        /*Station station[] = new Station[2];
-        station[0]=new Station("ÐžÑÐ½Ð¾Ð²Ð°",30.2);
-        station[1]=new Station("ÐšÑ€ÐµÐ¼ÐµÐ½Ñ‡ÑƒÐ³",60.75);
+        Station station[] = new Station[2];
+        station[0]=new Station("Îñíîâà",30.2);
+        station[1]=new Station("Êðåìåí÷óã",60.75);
         String [] days = {"1","2","3"};
-        Tour tour1= new Tour("0002","Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²-ÐŸÐ¾Ð»Ñ‚Ð°Ð²Ð°","Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²","12:12","ÐŸÐ¾Ð»Ñ‚Ð°Ð²Ð°","17:10","30.12.2015",25,station,99.99,days,101);
+        Tour tour1= new Tour("0002","Õàðüêîâ-Ïîëòàâà","Õàðüêîâ","12:12","Ïîëòàâà","17:10","30.12.2015",25,station,99.99,days,101,null);
         ds.addTour(tour1);
 
         station= new Station[2];
-        station[0]=new Station("Ð¨ÐµÐ²Ñ‡ÐµÐ½ÐºÐ¾Ð²Ð¾",4.05);
-        station[1]=new Station("ÐžÑÐ½Ð¾Ð²Ð°",4.5);
-        days = new String[]{"Ð•Ð¶ÐµÐ´Ð½ÐµÐ²Ð½Ð¾"};
-        Tour tour2= new Tour("0001","ÐšÑƒÐ¿ÑÐ½ÑÐº-Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²","ÐšÑƒÐ¿ÑÐ½ÑÐº","14:36","Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²","19:00","24.12.2015",150,station,5.94,days,300);
+        station[0]=new Station("Øåâ÷åíêîâî",4.05);
+        station[1]=new Station("Îñíîâà",4.5);
+        days = new String[]{"Åæåäíåâíî"};
+        Tour tour2= new Tour("0001","Êóïÿíñê-Õàðüêîâ","Êóïÿíñê","14:36","Õàðüêîâ","19:00","24.12.2015",150,station,5.94,days,300,null);
         ds.addTour(tour2);
 
         station=new Station[3];
-        station[0]=new Station("Ð¨ÐµÐ²Ñ‡ÐµÐ½ÐºÐ¾Ð²Ð¾",10.13);
-        station[1]=new Station("ÐšÑ€ÐµÐ¼ÐµÐ½Ñ‡ÑƒÐº",35.65);
-        station[2]=new Station("ÐŸÐ¾Ð´Ð³Ð¾Ñ€ÐºÐ¸",45);
+        station[0]=new Station("Øåâ÷åíêîâî",10.13);
+        station[1]=new Station("Êðåìåí÷óê",35.65);
+        station[2]=new Station("Ïîäãîðêè",45);
         days = new String[]{"2","4","5"};
-        Tour tour3= new Tour("0003","ÐšÑƒÐ¿ÑÐ½ÑÐº-ÐŸÐ¾Ð»Ñ‚Ð°Ð²Ð°","ÐšÑƒÐ¿ÑÐ½ÑÐº","10:26","ÐŸÐ¾Ð»Ñ‚Ð°Ð²Ð°","19:00","24.12.2015",80,station,50.50,days,107,null);
+        Tour tour3= new Tour("0003","Êóïÿíñê-Ïîëòàâà","Êóïÿíñê","10:26","Ïîëòàâà","19:00","24.12.2015",80,station,50.50,days,107,null);
         ds.addTour(tour3);
 
         station=new Station[4];
-        station[0]=new Station("Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²",10.3);
-        station[1]=new Station("ÐŸÐ¾Ð»Ñ‚Ð°Ð²Ð°",60.1);
-        station[2]=new Station("Ð§ÐµÑ€Ð½Ð¸Ð³Ð¾Ð²",76.24);
-        station[3]=new Station("ÐÐ¸Ð¿ÐºÐ¸",100.79);
+        station[0]=new Station("Õàðüêîâ",10.3);
+        station[1]=new Station("Ïîëòàâà",60.1);
+        station[2]=new Station("×åðíèãîâ",76.24);
+        station[3]=new Station("Íèïêè",100.79);
         days = new String[]{"1","3","5","7"};
-        Tour tour4= new Tour("0004","ÐšÑƒÐ¿ÑÐ½ÑÐº-ÐšÐ¸ÐµÐ²","ÐšÑƒÐ¿ÑÐ½ÑÐº","14:36","ÐšÐ¸ÐµÐ²","23:00","23.12.2015",150,station,150.57,days,300,null);
-        ds.addTour(tour4);*/
+        Tour tour4= new Tour("0004","Êóïÿíñê-Êèåâ","Êóïÿíñê","14:36","Êèåâ","23:00","23.12.2015",150,station,150.57,days,300,null);
+        ds.addTour(tour4);
 
-        Station station[] = new Station[2];
-        station[0] = new Station("ÐžÑÐ½Ð¾Ð²Ð°", 1.25);
-        station[1] = new Station("Ð“Ñ€Ð°ÐºÐ¾Ð²Ð¾", 3.6);
-        String[] days = new String[]{"Ð•Ð¶ÐµÐ´Ð½ÐµÐ²Ð½Ð¾"};
-        Tour tour5 = new Tour("0005", "Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²-ÐšÑƒÐ¿ÑÐ½ÑÐº", "Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²", "14:00", "ÐšÑƒÐ¿ÑÐ½ÑÐº", "17:00", "25.12.2015", 300, station, 6, days, 300, null);
+        station = new Station[2];
+        station[0] = new Station("Îñíîâà", 1.25);
+        station[1] = new Station("Ãðàêîâî", 3.6);
+        days = new String[]{"Åæåäíåâíî"};
+        Tour tour5 = new Tour("0005", "Õàðüêîâ-Êóïÿíñê", "Õàðüêîâ", "14:00", "Êóïÿíñê", "17:00", "25.12.2015", 300, station, 6, days, 300, null);
         ds.addTour(tour5);
 
-        /*station= new Station[4];
-        station[0]=new Station("ÐŸÐ¾Ð»Ñ‚Ð°Ð²Ð°",30.1);
-        station[1]=new Station("ÐšÐ¸ÐµÐ²",120.56);
-        station[2]=new Station("Ð–Ð¸Ñ‚Ð¾Ð¼Ð¸Ñ€",200.1);
-        station[3]=new Station("Ð¥Ð¼ÐµÐ»ÑŒÐ½Ð¸Ñ†ÐºÐ¸Ð¹",240.9);
+        station= new Station[4];
+        station[0]=new Station("Ïîëòàâà",30.1);
+        station[1]=new Station("Êèåâ",120.56);
+        station[2]=new Station("Æèòîìèð",200.1);
+        station[3]=new Station("Õìåëüíèöêèé",240.9);
         days = new String[]{"2","6","7"};
-        Tour tour6= new Tour("0006","Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²-Ð›ÑŒÐ²Ð¾Ð²","Ð¥Ð°Ñ€ÑŒÐºÐ¾Ð²","16:36","Ð›ÑŒÐ²Ð¾Ð²","6:05","26.12.2015",179,station,306.23,days,300,null);
-        ds.addTour(tour6);*/
+        Tour tour6= new Tour("0006","Õàðüêîâ-Ëüâîâ","Õàðüêîâ","16:36","Ëüâîâ","6:05","26.12.2015",179,station,306.23,days,300,null);
+        ds.addTour(tour6);
     }
 }

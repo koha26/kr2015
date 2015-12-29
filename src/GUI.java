@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -8,6 +9,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class GUI {
     private JButton deleteButton;
     private JButton editTourButton;
     private JButton returnTicketButton;
+    private JFormattedTextField date;
 
     public GUI() {
         initialize();
@@ -73,7 +78,7 @@ public class GUI {
         mainFrame.setResizable(false);
         //mainFrame.setPreferredSize(new Dimension(1000,200));
         //mainFrame.setBounds(screenWidth / 4, screenHeigth / 4, screenWidth / 2, screenHeigth / 2);
-        mainFrame.setTitle("ChatApp");
+        mainFrame.setTitle("BookingTicket");
         Image img = kit.getImage("1.jpg");
 
         leftPanel = new JPanel();
@@ -96,7 +101,13 @@ public class GUI {
         fromTextField = new JTextField();
         toTextField = new JTextField();
         dateTextField = new JTextField();
-
+        /*MaskFormatter mf;
+        try {
+            mf = new MaskFormatter("##.##.####");
+            date = new JFormattedTextField(mf);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
         searchButton = new JButton("Search");
         resetButton = new JButton("Refresh");
         addButton = new JButton("Add tour");
@@ -153,12 +164,12 @@ public class GUI {
                     String id = tableView.getModel().getIdAt(pos);
                     tableView.getModel().clear();
                     initializeTableData();
-                    JOptionPane.showMessageDialog(mainFrame, "РўСѓСЂ в„–" + id + " СѓСЃРїРµС€РЅРѕ СѓРґР°Р»РµРЅ!");
+                    JOptionPane.showMessageDialog(mainFrame, "Тур №" + id + " успешно удален!");
                 } else {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            JOptionPane.showMessageDialog(mainFrame, "РЎРЅР°С‡Р°Р»Р° РІС‹Р±РµСЂРёС‚Рµ С‚СѓСЂ!");
+                            JOptionPane.showMessageDialog(mainFrame, "Сначала выберите тур!");
                         }
                     });
                 }
@@ -214,7 +225,7 @@ public class GUI {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            JOptionPane.showMessageDialog(mainFrame, "РќСѓР¶РЅРѕ РІС‹РґРµР»РёС‚СЊ С‚СѓСЂ РІ С‚Р°Р±Р»РёС†Рµ!");
+                            JOptionPane.showMessageDialog(mainFrame, "Нужно выделить тур в таблице!");
                         }
                     });
                 }
@@ -356,7 +367,7 @@ public class GUI {
                                            SwingUtilities.invokeLater(new Runnable() {
                                                @Override
                                                public void run() {
-                                                   JOptionPane.showMessageDialog(returnForm, "Р’РѕР·РІСЂР°С‚ РїСЂРѕРёР·РІРµРґРµРЅ!");
+                                                   JOptionPane.showMessageDialog(returnForm, "Возврат произведен!");
                                                }
                                            });
                                            returnForm.dispose();
@@ -370,7 +381,7 @@ public class GUI {
                                SwingUtilities.invokeLater(new Runnable() {
                                    @Override
                                    public void run() {
-                                       JOptionPane.showMessageDialog(returnForm, "Р‘РёР»РµС‚Р° РЅР° РёРјСЏ СЌС‚РѕРіРѕ С‡РµР»РѕРІРµРєР° РЅРµ РєСѓРїР»РµРЅРѕ!");
+                                       JOptionPane.showMessageDialog(returnForm, "Билета на имя этого человека не куплено!");
 
                                    }
                                });
@@ -380,7 +391,7 @@ public class GUI {
                        SwingUtilities.invokeLater(new Runnable() {
                            @Override
                            public void run() {
-                               JOptionPane.showMessageDialog(returnForm, "РўР°РєРѕРіРѕ С‚СѓСЂР° РЅРµ Р±С‹Р»Рѕ РЅР°Р№РґРµРЅРѕ!");
+                               JOptionPane.showMessageDialog(returnForm, "Такого тура не было найдено!");
                            }
                        });
                        return;
@@ -389,7 +400,7 @@ public class GUI {
                        SwingUtilities.invokeLater(new Runnable() {
                            @Override
                            public void run() {
-                               JOptionPane.showMessageDialog(returnForm, "Р’С‹ РЅРµ Р·Р°РїРѕР»РЅРёР»Рё РІСЃРµ РїРѕР»СЏ!");
+                               JOptionPane.showMessageDialog(returnForm, "Вы не заполнили все поля!");
                            }
                        });
                    }
@@ -563,8 +574,8 @@ public class GUI {
                         @Override
                         public void run() {
                             if (!flag[0])
-                                JOptionPane.showMessageDialog(addForm, "Р’РІРµРґРёС‚Рµ РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СЃС‚Р°РЅРёС†РёСЋ Рё С‡РµСЂРµР· РїСЂРѕР±РµР» С†РµРЅСѓ Р±РёР»РµС‚Р°." +
-                                        "РљР°Р¶РґСѓСЋ СЃС‚Р°РЅС†РёСЋ РІРІРѕРґРёС‚СЊ С‡РµСЂРµР· РїСЂРѕР±РµР». РџСЂРёРјРµСЂ: РҐР°СЂСЊРєРѕРІ 23.6 РљСѓРїСЏРЅСЃРє 12.6");
+                                JOptionPane.showMessageDialog(addForm, "Введите пожалуйста, станицию и через пробел цену билета." +
+                                        "Каждую станцию вводить через пробел. Пример: Харьков 23.6 Купянск 12.6");
                             flag[0] = true;
                         }
                     });
@@ -629,8 +640,11 @@ public class GUI {
                                 detTText.getText(), toText.getText(), arrTText.getText(), dateText.getText(),
                                 Integer.parseInt(freePlacesText.getText()), stations, Double.parseDouble(mainPriceText.getText()),
                                 days, Integer.parseInt(allPlacesText.getText()),null));
+
                         try {
                             dataAccess.addTour(tableView.getModel().getAt(tableView.getModel().getSize() - 1));
+                            tableView.getModel().clear();
+                            initializeTableData();
                         } catch (FileNotFoundException e1) {
                             e1.printStackTrace();
                         }
@@ -639,9 +653,9 @@ public class GUI {
                             @Override
                             public void run() {
                                 if (!editable)
-                                    JOptionPane.showMessageDialog(addForm, "РўСѓСЂ РґРѕР±Р°РІР»РµРЅ!");
+                                    JOptionPane.showMessageDialog(addForm, "Тур добавлен!");
                                 else {
-                                    JOptionPane.showMessageDialog(addForm, "РўСѓСЂ РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°РЅ!");
+                                    JOptionPane.showMessageDialog(addForm, "Тур отредактирован!");
                                     editable=false;
                                 }
                             }
@@ -653,12 +667,13 @@ public class GUI {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                JOptionPane.showMessageDialog(addForm, "Р’С‹ РІРІРµР»Рё РЅРµ РІСЃРµ РґР°РЅРЅС‹Рµ!");
+                                JOptionPane.showMessageDialog(addForm, "Вы ввели не все данные!");
                             }
                         });
                     }
                 }
             });
+
         }
     }
 
@@ -970,7 +985,7 @@ public class GUI {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                                JOptionPane.showMessageDialog(ticketForm, "РР·РІРёРЅРёС‚Рµ, РЅРѕ Р±РёР»РµС‚РѕРІ РЅРµС‚!");
+                                JOptionPane.showMessageDialog(ticketForm, "Извините, но билетов нет!");
                             }
                         });
                     }
@@ -995,7 +1010,7 @@ public class GUI {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    JOptionPane.showMessageDialog(ticketForm, "Р‘РёР»РµС‚ РЅРµРІРѕР·РјРѕР¶РЅРѕ РєСѓРїРёС‚СЊ, С‚.Рє.РјР°СЂС€СЂСѓС‚ РЅРµ Р»РµР¶РёС‚ С‡РµСЂРµР· СЌС‚Рё СЃС‚Р°РЅС†РёРё.");
+                    JOptionPane.showMessageDialog(ticketForm, "Билет невозможно купить, т.к.маршрут не лежит через эти станции.");
 
                 }
             });
@@ -1006,7 +1021,7 @@ public class GUI {
                 @Override
                 public void run() {
 
-                    JOptionPane.showMessageDialog(ticketForm, "Р‘РёР»РµС‚ СѓРґР°С‡РЅРѕ РєСѓРїР»РµРЅ Рё СЃРѕС…СЂР°РЅРµРЅ РІ РєРѕСЂРЅРµРІРѕР№ РїР°РїРєРµ!");
+                    JOptionPane.showMessageDialog(ticketForm, "Билет удачно куплен и сохранен в корневой папке!");
                 }
             });
         }
