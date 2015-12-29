@@ -9,6 +9,12 @@ public class DataAccess {
     private Map<String, String> tourNameDate = new HashMap<String, String>();
 
     public DataAccess() {
+        File log = new File("log");
+        log.mkdir();
+        log.mkdirs();
+        File tik = new File("tickets");
+        tik.mkdir();
+        tik.mkdirs();
         File myFolder = new File(DataAccess.LOG_FOLDER);
         this.files = myFolder.listFiles();
         String name = "";
